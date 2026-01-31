@@ -44,7 +44,7 @@ export function createWelcomeEmailTemplate(name, clientURL) {
 
         <div style="text-align: center; margin-top: 40px; margin-bottom: 20px;">
           <a href="${clientURL}" style="background-color: #764ba2; background: linear-gradient(90deg, #764ba2 0%, #667eea 100%); color: #ffffff; padding: 16px 45px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);">
-            Open Messenger
+            Open NexChat
           </a>
         </div>
         

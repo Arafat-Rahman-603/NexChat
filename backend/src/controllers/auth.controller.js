@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import User from "../models/User.model.js";
 import { generateToken } from "../lib/utils.js";
 import { sendWelcomeEmail } from "../email/emailHandlers.js";
+import cloudinary from "../lib/cloudinary.js";
 
 import dotenv from "dotenv";
 dotenv.config();    
@@ -103,12 +104,36 @@ export const logout = async (req, res) => {
     res.status(200).json({ message: "Logout successful" });
 }
 
-export const update = async (req, res) => {
-    const {fullname,email,password} = req.body;
-    const {id} = req.params;
-    
+export const updateProfile = async (req, res) => {
     try {
-        
+        const {fullname,password,profilePic} = req.body;
+        if (!fullname || !password || !profilePic) {
+            return res.status(400).json({message:"All fields are require"});
+        }
+
+        const user = await User.findById(req.user._id);
+        if(!user){
+            return res.status(404).json({message:"User not found"});
+        }
+
+        if(password){
+            const salt = await bcrypt.genSalt(12);
+            user.password = await bcrypt.hash(password,salt);
+        }
+
+        if(profilePic){
+            const uploadedImage = await cloudinary.uploader.upload(profilePic);
+            user.profilePic = uploadedImage.secure_url;
+        }
+
+        user.fullname = fullname;
+        await user.save();
+        res.status(200).json({
+            _id: user._id,
+            fullName: user.fullname,
+            email: user.email,
+            profilePic: user.profilePic,
+        })
     } catch (error) {
         console.log(error.message);
         res.status(500).json({ message: "Internal server error" });
