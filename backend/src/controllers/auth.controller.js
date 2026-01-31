@@ -1,6 +1,10 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.model.js";
 import { generateToken } from "../lib/utils.js";
+import { sendWelcomeEmail } from "../email/emailHandlers.js";
+
+import dotenv from "dotenv";
+dotenv.config();    
 
 export const signup = async (req, res) => {
   const { fullname, email, password } = req.body;
@@ -43,6 +47,12 @@ export const signup = async (req, res) => {
         email: newUser.email,
         profilePic: newUser.profilePic,
       });
+
+      try {
+        await sendWelcomeEmail(newUser.email, newUser.fullname, process.env.CLIENT_URL);
+      } catch (error) {
+        console.log(error.message);
+      }
     } else {
       res.status(400).json({ message: "User not created" });
     }
