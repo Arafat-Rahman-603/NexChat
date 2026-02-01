@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 dotenv.config();    
 
 export const signup = async (req, res) => {
+  console.log(req.body);
   const { fullname, email, password } = req.body;
   try {
     if (!fullname || !email || !password) {
