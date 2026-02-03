@@ -5,7 +5,7 @@ import { sendWelcomeEmail } from "../email/emailHandlers.js";
 import cloudinary from "../lib/cloudinary.js";
 
 import dotenv from "dotenv";
-dotenv.config();    
+dotenv.config();
 
 export const signup = async (req, res) => {
   console.log(req.body);
@@ -51,7 +51,11 @@ export const signup = async (req, res) => {
       });
 
       try {
-        await sendWelcomeEmail(newUser.email, newUser.fullname, process.env.CLIENT_URL);
+        await sendWelcomeEmail(
+          newUser.email,
+          newUser.fullname,
+          process.env.CLIENT_URL,
+        );
       } catch (error) {
         console.log(error.message);
       }
@@ -64,79 +68,63 @@ export const signup = async (req, res) => {
   }
 };
 
-
 export const login = async (req, res) => {
-    const {email,password} = req.body;
+  const { email, password } = req.body;
 
-    try {
-        if(!email || !password){
-            return res.status(400).json({message:"All fields are require"});
-        }
-        const user = await User.findOne({ email: email });
-        if(!user){
-            res.status(400).json({message:"Invalid email or password"});
-        }
-
-        const isPasswordCorrect = await bcrypt.compare(password,user.password);
-
-        if(!isPasswordCorrect){
-            return res.status(400).json({message:"Invalid email or password"});
-        }
-
-        generateToken(user._id,res);
-        res.status(200).json({
-            _id: user._id,
-            fullName: user.fullname,
-            email: user.email,
-            profilePic: user.profilePic,
-        })
-
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).json({ message: "Internal server error" });
+  try {
+    if (!email || !password) {
+      return res.status(400).json({ message: "All fields are require" });
     }
-}
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    generateToken(user._id, res);
+    res.status(200).json({
+      _id: user._id,
+      fullName: user.fullname,
+      email: user.email,
+      profilePic: user.profilePic,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 export const logout = async (req, res) => {
-    res.cookie("token", "", {
-        httpOnly: true,
-        expires: new Date(0),
-    });
-    res.status(200).json({ message: "Logout successful" });
-}
+  res.cookie("token", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  res.status(200).json({ message: "Logout successful" });
+};
 
 export const updateProfile = async (req, res) => {
-    try {
-        const {fullname,password,profilePic} = req.body;
-        if (!fullname || !password || !profilePic) {
-            return res.status(400).json({message:"All fields are require"});
-        }
+  try {
+    const { profilePic } = req.body;
+    if (!profilePic) return res.status(400).json({ message: "Profile pic is required" });
 
-        const user = await User.findById(req.user._id);
-        if(!user){
-            return res.status(404).json({message:"User not found"});
-        }
+    const userId = req.user._id;
 
-        if(password){
-            const salt = await bcrypt.genSalt(12);
-            user.password = await bcrypt.hash(password,salt);
-        }
+    const uploadResponse = await cloudinary.uploader.upload(profilePic);
 
-        if(profilePic){
-            const uploadedImage = await cloudinary.uploader.upload(profilePic);
-            user.profilePic = uploadedImage.secure_url;
-        }
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profilePic: uploadResponse.secure_url },
+      { new: true }
+    );
 
-        user.fullname = fullname;
-        await user.save();
-        res.status(200).json({
-            _id: user._id,
-            fullName: user.fullname,
-            email: user.email,
-            profilePic: user.profilePic,
-        })
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).json({ message: "Internal server error" });
-    }
-}
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.log("Error in update profile:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

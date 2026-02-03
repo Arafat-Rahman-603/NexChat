@@ -6,12 +6,12 @@ const router = express.Router();
 
 router.use(arcjetProtection,protectRoute);
 
-router.get("/contancts", getAllContancts);
-// 
-router.get("/chat", getChatPartner);
-// 
+router.get("/contacts", getAllContancts);
+
+router.get("/chats", getChatPartner);
+
 router.get("/:id", getMessagesByUserId);
-// 
+
 router.post("/send/:id", sendMessage)
-// 
+
 export default router;
