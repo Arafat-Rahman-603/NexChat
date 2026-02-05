@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import BorderAnimatedContainer from "../components/BorderAnimatedContainer";
-import { MessageCircleIcon, MailIcon, LoaderIcon, LockIcon, EyeIcon, EyeOffIcon } from "lucide-react";
+import { MessageCircleIcon, MailIcon, LockIcon } from "lucide-react";
 import { Link } from "react-router";
 
 function LoginPage() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const { login, isLoggingIn } = useAuthStore();
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -16,7 +15,7 @@ function LoginPage() {
 
   return (
     <div className="w-full flex items-center justify-center p-4 bg-slate-900">
-      <div className="relative w-full max-w-6xl md:h-[800px] h-[620px]">
+      <div className="relative w-full max-w-6xl md:h-[800px] h-[650px]">
         <BorderAnimatedContainer>
           <div className="w-full flex flex-col md:flex-row">
             <div className="md:w-1/2 p-8 flex items-center justify-center md:border-r border-slate-600/30">
@@ -41,32 +40,25 @@ function LoginPage() {
                       />
                     </div>
                   </div>
+
                   <div>
                     <label className="auth-input-label">Password</label>
                     <div className="relative">
                       <LockIcon className="auth-input-icon" />
-           
+
                       <input
-                        type={showPassword ? "text" : "password"}
+                        type="password"
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         className="input"
                         placeholder="Enter your password"
                       />
-                      <div className="absolute right-11 top-1/2 transform -translate-y-1/2">
-                        <button type="button" onClick={() => setShowPassword(!showPassword)}>
-                          {showPassword ? (
-                            <EyeIcon className="auth-input-icon" />
-                          ) : (
-                            <EyeOffIcon className="auth-input-icon" />
-                          )}
-                        </button>
-                      </div>
                     </div>
                   </div>
+
                   <button className="auth-btn" type="submit" disabled={isLoggingIn}>
                     {isLoggingIn ? (
-                      <LoaderIcon className="w-full h-5 animate-spin text-center" />
+                      <div className="animate-spin mx-auto items-center rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
                     ) : (
                       "Sign In"
                     )}
@@ -80,6 +72,7 @@ function LoginPage() {
                 </div>
               </div>
             </div>
+
             <div className="hidden md:w-1/2 md:flex items-center justify-center p-6 bg-gradient-to-bl from-slate-800/20 to-transparent">
               <div>
                 <img

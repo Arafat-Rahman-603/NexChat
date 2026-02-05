@@ -9,6 +9,7 @@ function ProfileHeader() {
   const { logout, authUser, updateProfile } = useAuthStore();
   const { isSoundEnabled, toggleSound } = useChatStore();
   const [selectedImg, setSelectedImg] = useState(null);
+
   const fileInputRef = useRef(null);
 
   const handleImageUpload = (e) => {
@@ -52,14 +53,16 @@ function ProfileHeader() {
               className="hidden"
             />
           </div>
+
           <div>
             <h3 className="text-slate-200 font-medium text-base max-w-[180px] truncate">
-              {authUser.fullName}
+              {authUser.fullname}
             </h3>
 
             <p className="text-slate-400 text-xs">Online</p>
           </div>
         </div>
+
         <div className="flex gap-4 items-center">
           <button
             className="text-slate-400 hover:text-slate-200 transition-colors"
@@ -67,6 +70,7 @@ function ProfileHeader() {
           >
             <LogOutIcon className="size-5" />
           </button>
+
           <button
             className="text-slate-400 hover:text-slate-200 transition-colors"
             onClick={() => {

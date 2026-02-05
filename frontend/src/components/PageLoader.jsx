@@ -1,9 +1,8 @@
-import React from 'react'
-
-export default function PageLoader() {
+function PageLoader() {
   return (
-    <div className='flex items-center justify-center h-screen'>
-        <div className='animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500'></div>
+    <div className="flex items-center justify-center h-screen">
+      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
     </div>
-  )
+  );
 }
+export default PageLoader;
